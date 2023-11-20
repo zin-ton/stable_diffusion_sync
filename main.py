@@ -8,15 +8,14 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
-path = '' #your path
+path = '' #your path to sync
 filesBefore = set()
-TG_API = "" #your telegram bot API
-DRIVE_API = "" #path to your GDrive secret json file
+TG_API = "" #your telegram bot api
+DRIVE_API = "" #your secret json file from google api
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 bot = telebot.TeleBot(TG_API, parse_mode = None)
 def send_msg(message):
-    bot.send_message(#your telegram id
-        , message)
+    bot.send_message(#your telegram id, message)
 
 
 creds = None
@@ -40,7 +39,7 @@ def search_file():
     while True:
         response = (
             service.files().list(
-                q="parents in '{}'".format(#your GDrive folder id),
+                q="parents in '{}'".format(""),#your google drive directory id to check
                 spaces = "drive",
                 fields = "nextPageToken, files(id, name)",
                 pageToken = page_token
@@ -56,17 +55,15 @@ def search_file():
     return files
 
 
-disk_files = search_file()
 
 
 def upload_basic(filename, name):
   try:
-    # create drive api client
     service = build("drive", "v3", credentials=creds)
 
-    file_metadata = {"name": name, "parents": [#your GDrive folder id""]}
-    media = MediaFileUpload(filename, mimetype="image/jpeg")
-    # pylint: disable=maybe-no-member
+    file_metadata = {"name": name, "parents": ["your GDrive directory id"]}
+    media = MediaFileUpload(filename, mimetype="image/png")
+    
     file = (
         service.files()
         .create(body=file_metadata, media_body=media, fields="id")
@@ -82,6 +79,7 @@ def upload_basic(filename, name):
 
 
 while(True):
+    disk_files = search_file()
     filesBefore = set()
     files = set(os.listdir(path))
     temp = files.copy()
@@ -89,13 +87,16 @@ while(True):
         for j in temp:
             if(i['name'] == j):
                 files.remove(j)
+                temp = files.copy()
     deletedFiles = filesBefore - files
     newFiles = files - filesBefore
     filesBefore = files
     print(newFiles)
     if(len(newFiles) != 0):
-         for i in newFiles:
-             send_msg("found new file: " + i)
+        send_msg("found " + str(len(newFiles)) + " new files")
+        send_msg("trying to upload " + str(len(newFiles)) + " new files to google drive")
     for i in newFiles:
-        send_msg("started uploading file: " + path + '\\' + i + " id: " + upload_basic(path + '\\' + i, i))
-    time.sleep(10)
+        print(i + '\n')
+        upload_basic(path + '\\' + i, i)
+        print('\n')
+    time.sleep(60)
