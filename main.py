@@ -11,7 +11,7 @@ from googleapiclient.http import MediaFileUpload
 path = '' #your path
 filesBefore = set()
 TG_API = "" #your telegram bot API
-DRIVE_API = "C:\\Users\\zhili\\OneDrive\\Документы\\secret.json"
+DRIVE_API = "" #path to your GDrive secret json file
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 bot = telebot.TeleBot(TG_API, parse_mode = None)
 def send_msg(message):
