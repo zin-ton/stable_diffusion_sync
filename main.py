@@ -8,14 +8,15 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
-path = 'C:\\umcs\\angielski'
+path = '' #your path
 filesBefore = set()
-TG_API = ""
+TG_API = "" #your telegram bot API
 DRIVE_API = "C:\\Users\\zhili\\OneDrive\\Документы\\secret.json"
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 bot = telebot.TeleBot(TG_API, parse_mode = None)
 def send_msg(message):
-    bot.send_message(473239982, message)
+    bot.send_message(#your telegram id
+        , message)
 
 
 creds = None
@@ -39,7 +40,7 @@ def search_file():
     while True:
         response = (
             service.files().list(
-                q="parents in '{}'".format("1Qg3P4DoERUqVTZ_gtipHQ87OSOG0XdJ6"),
+                q="parents in '{}'".format(#your GDrive folder id),
                 spaces = "drive",
                 fields = "nextPageToken, files(id, name)",
                 pageToken = page_token
@@ -59,19 +60,11 @@ disk_files = search_file()
 
 
 def upload_basic(filename, name):
-  """Insert new file.
-  Returns : Id's of the file uploaded
-
-  Load pre-authorized user credentials from the environment.
-  TODO(developer) - See https://developers.google.com/identity
-  for guides on implementing OAuth2 for the application.
-  """
-
   try:
     # create drive api client
     service = build("drive", "v3", credentials=creds)
 
-    file_metadata = {"name": name, "parents": ["1Qg3P4DoERUqVTZ_gtipHQ87OSOG0XdJ6"]}
+    file_metadata = {"name": name, "parents": [#your GDrive folder id""]}
     media = MediaFileUpload(filename, mimetype="image/jpeg")
     # pylint: disable=maybe-no-member
     file = (
